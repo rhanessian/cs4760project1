@@ -1,13 +1,12 @@
-.DEFAULT_GOAL
-linuxcalls: oss.o worker.o
-            gcc -o linuxcalls oss.o worker.o
-            
-oss.o: oss.c
-        gcc -c oss.c
-        
-worker.o: worker.c
-          gcc -c worker.c
-          
-.PHONY
+CC = gcc
+
+all: oss worker
+
+oss: oss.c
+        gcc -std=c99 -o oss oss.c
+
+worker: worker.c
+        gcc -std=c99 -o worker worker.c
+
 clean:
-      /bin/rm -f *.o *~ linuxcalls
+        $(RM) worker oss
