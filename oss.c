@@ -16,7 +16,7 @@ void print_usage (const char* argmt){
 }
 
 int main (int argc, char *argv[]){
-	pid_t workerpid = 0;
+	pid_t workerpid = fork();
 	int i, j;
 	
 	char opt;
@@ -42,5 +42,8 @@ int main (int argc, char *argv[]){
 			default:
 				printf ("Invalid option %c\n", opt);
 				print_usage (argv[0]);
-				return (EXIT_FAILURE);		}
+				return (EXIT_FAILURE);		
+		}
+		
+	
 }
