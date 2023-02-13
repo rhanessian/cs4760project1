@@ -18,7 +18,7 @@ void print_usage (const char* argmt){
 }
 
 int main (int argc, char *argv[]){
-	pid_t workerpid = fork();
+	pid_t workerpid = 0;
 	int i, j;
 	
 	char opt;
@@ -46,6 +46,14 @@ int main (int argc, char *argv[]){
 				print_usage (argv[0]);
 				return (EXIT_FAILURE);		
 		}
-		
 	
+	for (i = 1; i < proc; i++) {
+		workerpid = fork();
+		if (workerpid == 0){
+			fprintf(stderr,"Exec failed, terminating\n");
+			exit(1);
+		} else {
+			execvp(./worker, iter);
+		}
+	}
 }
