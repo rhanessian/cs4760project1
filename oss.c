@@ -7,7 +7,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <getopt.h>
-#include<sys/types.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+typedef struct {
+    int proc;
+    int simul;
+    int iter;
+} options_t;
 
 void print_usage (const char* argmt){
 	fprintf(stderr, "Usage: %s [-h] [-n proc] [-s simul] [-t iter]\n", argmt);
@@ -21,39 +28,48 @@ int main (int argc, char *argv[]){
 	pid_t workerpid = 0;
 	int i, j;
 	
-	char opt;
+    char opt;
+    options_t options;
 
-	int proc = 15, simul = 5, iter = 10;
+    options.proc = 15;
+    options.simul = 5;
+    options.iter = 10;
 	
 	opterr = 0;
 
 	while ((opt = getopt (argc, argv, "hn:s:t:")) != -1)
 		switch (opt) {
+            case 'h':
+                print_usage (argv[0]);
+                return (EXIT_SUCCESS);
 			case 'n':
-				proc = atoi(optarg);
+				options.proc = atoi(optarg);
 				break;
 			case 's':
-				simul = atoi(optarg);
+				options.simul = atoi(optarg);
 				break;
 			case 't':
-				iter = atoi(optarg);
+				options.iter = atoi(optarg);
 				break;
-			case 'h':
-				print_usage (argv[0]);
-				return (EXIT_SUCCESS);
 			default:
 				printf ("Invalid option %c\n", opt);
 				print_usage (argv[0]);
 				return (EXIT_FAILURE);		
 		}
 	
-	for (i = 1; i < proc; i++) {
+	for (i = 0; i < options.proc; i++) {
 		workerpid = fork();
 		if (workerpid == 0){
-			fprintf(stderr,"Exec failed, terminating\n");
-			exit(1);
-		} else {
-			execvp(./worker, iter);
-		}
+			char *newargv[3];
+            char iterBuf[20];
+            sprintf(iterBuf, "%d",options.iter);
+			newargv[0] = "./worker";
+			newargv[1] = iterBuf;
+			newargv[2] = NULL;
+        	execvp("./worker",newargv);
+        	exit(127);
+		}else { 
+        	waitpid(workerpid,0,0); 
+    }
 	}
 }
