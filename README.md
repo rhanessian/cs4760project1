@@ -1,5 +1,5 @@
 # cs4760project1
-# Linux System Calls-SKeleton Multiple Processes
+# Linux System Calls-Skeleton Multiple Processes
 # Rebecca Hanessian
 
 This program utlizes a master file and a worker file. The master forks the worker<br />
