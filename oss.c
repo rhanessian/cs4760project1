@@ -9,6 +9,9 @@
 #include <getopt.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <signal.h>
+
+int counter = 0;
 
 typedef struct {
     int proc;
@@ -22,6 +25,11 @@ void print_usage (const char* argmt){
 	fprintf(stderr, "	simul is the number of processes that can run simultaneously\n");
 	fprintf(stderr, "	iter is the number to be passed to the worker processes\n");
 	fprintf(stderr, "Default proc is 15, default simul is 5, default iter is 10.\n");
+}
+
+void proc_exit(){
+    counter--;
+    printf("Handler Counter: %d\n", counter);
 }
 
 int main (int argc, char *argv[]){
@@ -56,20 +64,26 @@ int main (int argc, char *argv[]){
 				print_usage (argv[0]);
 				return (EXIT_FAILURE);		
 		}
-	
+    
+    signal (SIGCHLD, proc_exit);
 	for (i = 0; i < options.proc; i++) {
-		workerpid = fork();
-		if (workerpid == 0){
-			char *newargv[3];
+        if (counter > options.simul){
+            waitpid(workerpid,0,0);
+            continue;
+        }
+        workerpid = fork();
+        if (workerpid == 0){
+            char *newargv[3];
             char iterBuf[20];
             sprintf(iterBuf, "%d",options.iter);
-			newargv[0] = "./worker";
-			newargv[1] = iterBuf;
-			newargv[2] = NULL;
-        	execvp("./worker",newargv);
-        	exit(127);
-		}else { 
-        	waitpid(workerpid,0,0); 
+            newargv[0] = "./worker";
+            newargv[1] = iterBuf;
+            newargv[2] = NULL;
+            printf("Exec Counter: %d\n", counter);
+            execvp("./worker",newargv);
+            exit(127);
+        } else {
+            counter++;
+        }
     }
-	}
 }
