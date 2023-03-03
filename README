@@ -12,4 +12,6 @@ Usage: ./oss [-h] [-n proc] [-s simul] [-t iter]<br />
         proc is the number of worker processes to launch<br />
         simul is the number of processes that can run simultaneously<br />
         iter is the number to be passed to the worker processes<br />
-Default proc is 15, default simul is 5, default iter is 10.
+Default proc is 15, default simul is 5, default iter is 10.<br />
+
+Github was used to log all versions of this project.
